@@ -1,0 +1,61 @@
+{
+   "$schema":"https://lnav.org/schemas/format-v1.schema.json",
+   "a_gerrit_error":{
+      "title":"Gerrit error_log format",
+      "description":"The error log tracks errors and stack traces",
+      "url":"https://gerrit-review.googlesource.com/Documentation/logs.html#_error_log",
+      "file-pattern":"error_log*",
+      "regex":{
+         "std":{
+            "pattern":"^\\[(?<timestamp>\\d{4}\\-\\d{2}\\-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}\\+\\d{2}:\\d{2})\\]((\\s\\[)(?<thread>.+?(?=\\]\\s))(\\]\\s))(?<level>TRACE|DEBUG|INFO|WARN|ERROR)\\s+(?<component>[^:]*)\\s+:\\s+(?<message>.*)?"
+         }
+      },
+      "level-field":"level",
+      "body-field":"message",
+      "level":{
+         "ERROR":"error",
+         "WARNING":"warning",
+         "INFO":"info",
+         "DEBUG":"debug",
+         "TRACE":"trace"
+      },
+      "value":{
+         "timestamp":{
+            "description":"Date and time that the request was received",
+            "kind":"string",
+            "hidden":false
+         },
+         "thread":{
+            "description":"Name of the Java thread executing the request",
+            "kind":"string",
+            "hidden":false
+         },
+         "level":{
+            "description":"Log level",
+            "kind":"string"
+         },
+         "component":{
+            "description":"Name of the logger",
+            "kind":"string",
+            "hidden":false,
+            "identifier":true
+         },
+         "message":{
+            "description":"Log message",
+            "kind":"string"
+         }
+      },
+      "timestamp-format":[
+         "%Y-%m-%dT%H:%M:%S.%L%z",
+         "%Y-%m-%dT%H:%M:%S.%L%Z"
+      ],
+      "sample":[
+         {
+            "line":"[1980-06-29T00:00:00.000+01:00] [kafka-x[java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask@0123456[Not completed, task = java.util.concurrent.Executors$RunnableAdapter@0123456[Wrapped task = com.google.gerrit.server.logging.LoggingContextAwareRunnable@0123456]]]] INFO  org.apache.kafka.clients.consumer.internals.Fetcher : [Consumer clientId=consumer-0, groupId=instance-0] Resetting offset for partition gerrit_list_project-0 to offset 0."
+         },
+         {
+            "line":"[1980-06-29T00:00:00.000+01:00] [main] INFO  org.eclipse.jetty.server.Server : Started @4598ms"
+         }
+      ]
+   }
+}
