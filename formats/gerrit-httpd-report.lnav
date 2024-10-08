@@ -1,0 +1,29 @@
+#
+# @synopsis: gerrit-httpd-report [<output-path>]
+# @description: Generate a report for requests in httpd_log files
+#
+
+# Figure out the file path where the report should be written to, default is
+# stdout
+
+;SELECT CASE
+    WHEN $1 IS NULL THEN '-'
+    ELSE $1
+    END AS out_path
+
+# Redirect output from commands to $out_path
+:redirect-to $out_path
+
+:echo
+:echo Protocols analysis:
+:echo
+
+# Print an introductory message
+;SELECT 
+    method, 
+    COUNT(*) AS requests 
+FROM gerrit_httpd_log  
+GROUP BY method 
+ORDER BY requests DESC
+
+:write-table-to -

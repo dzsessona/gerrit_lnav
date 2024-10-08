@@ -1,0 +1,46 @@
+#
+# @synopsis: gerrit-error-report [<output-path>]
+# @description: Generate a report for requests in error_log files
+#
+
+# Figure out the file path where the report should be written to, default is
+# stdout
+
+;SELECT CASE
+    WHEN $1 IS NULL THEN '-'
+    ELSE $1
+    END AS out_path
+
+# Redirect output from commands to $out_path
+:redirect-to $out_path
+
+:echo
+:echo Errors analysis by Reporter:
+:echo
+
+# Print an introductory message
+;SELECT 
+    logger AS Reporter, 
+    COUNT(*) AS errors 
+FROM gerrit_error_log 
+WHERE log_level = 'error' 
+GROUP BY logger 
+ORDER BY errors DESC
+
+:write-table-to -
+
+:echo
+:echo Errors analysis by tags:
+:echo
+
+# Print an introductory message
+;SELECT 
+    log_tags AS Tag, 
+    COUNT(*) AS messages 
+FROM gerrit_error_log 
+WHERE log_level = 'error' 
+AND log_tags IS NOT NULL
+GROUP BY log_tags 
+ORDER BY messages DESC
+
+:write-table-to -
